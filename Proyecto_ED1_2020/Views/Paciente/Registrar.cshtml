@@ -1,0 +1,102 @@
+﻿@model Proyecto_ED1_2020.Models.Paciente
+@{
+    ViewBag.Title = "Registrar";
+}
+
+<h2>Registrar nuevo paciente</h2>
+
+<form action="SelecionarDepto" method="post" id="Form1">
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nombre, "Nombres", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Apellido, "Apellidos", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Apellido, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CUI, "DPI/CUI", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CUI, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CUI, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Edad, "Edad", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Edad, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Edad, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Departamento, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Departamento,
+             new SelectList(Model.fullDepartamento(), "Departamento"), "- Seleccionar Departamento -",
+                htmlAttributes: new { @id = "ADepartamento", @class = "form-control" })
+                @Html.Hidden("Departamento", null, new { @id = "dDepartamento" })
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                <script type="text/javascript">
+                    $("body").on("change", "#ADepartamento", function () {
+                        $("#dDepartamento").val($(this).find("option:selected").text());
+                        document.forms["Form1"].submit();
+                    });
+                </script>
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Munucipio, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @if (Model.Municipios == null)
+                {
+                    @Html.DropDownListFor(model => model.Munucipio, new SelectList(""), "- Seleccionar Municipio -", htmlAttributes: new { @style = "left: 8px; width:auto", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Departamento)
+                }
+                else
+                {
+                    @Html.DropDownListFor(model => model.Munucipio, new SelectList(Model.Municipios), "- Seleccionar Municipio -", htmlAttributes: new { @style = "left: 8px; width:auto", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Departamento)
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Sintomas", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="checkbox" name="Fiebre" value="fiebre" /> Fiebre &emsp;
+                <input type="checkbox" name="Cansancio" value="Cansancio" /> Cansancio &emsp;
+                <input type="checkbox" name="Tos seca" value="Tos seca" /> Tos seca <br />
+                <input type="checkbox" name="Dolor corporal" value="Dolor corporal" /> Dolor corporal &ensp;
+                <input type="checkbox" name="Congestion nasal" value="Congestion nasal" /> Congestion nasal<br />
+                <input type="checkbox" name="Secrecion nasal" value="Secrecion nasal" /> Secrecion nasal &ensp;
+                <input type="checkbox" name="Dolor de garganta" value="Dolor de garganta" /> Dolor de garganta<br />
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.DescripcionDePosibleContagio, "Descripcion", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <textarea id="Desciripcion" name="Descripcion" class="wmd-input s-input bar0 js-post-body-field processed form-control"
+                          data-post-type-id="2" cols="92" rows="15" tabindex="101" data-min-length="">
+                    </textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-10">
+                <button type="submit">Registrar</button>
+            </div>
+        </div>
+    </div>
+   
+</form>
+
+
+
+

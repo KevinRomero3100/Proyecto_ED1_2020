@@ -1,0 +1,26 @@
+﻿@model Proyecto_ED1_2020.Models.Paciente
+@{
+    ViewBag.Title = "prueva";
+}
+
+    <form action="/Registrar/Paciente" method="post" enctype="multipart/form-data">
+        @using (Html.BeginForm("Submit", "Paciente", FormMethod.Post, new { @name = "Form1" }))
+        {
+            @Html.DropDownListFor(model => model.Departamento,
+            new SelectList(Model.fullDepartamento(), "Departamento"), "Please select", htmlAttributes: new { @id = "Departamento" })
+            @Html.Hidden("Departamento", null, new { @id = "dDepartamento" })
+        }
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            $("body").on("change", "#Departamento", function () {
+                $("#dDepartamento").val($(this).find("option:selected").text());
+                document.forms["Form1"].submit();
+            });
+        </script>
+
+        <button type="submit" onclick="location.href.'@Url.Action("ss")'">jjjjj</button>
+    </form>
+
+
+<h2>prueva</h2>
+
