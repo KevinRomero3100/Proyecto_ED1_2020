@@ -727,11 +727,11 @@ namespace Proyecto_ED1_2020.Models
                     else
                     {
                         Storage.Instance.camasPeten++;
-                        var index = Storage.Instance.hashPET.Dequeue();
+                        /*var index = Storage.Instance.hashPET.Dequeue();
                         index.estado = "Ocupado";
                         Storage.Instance.hashPET.Enqueue(index);
                         this.IndexCama = index;
-                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);*/
                     }
                 }
                 else if (Estado == "Sospechoso")
@@ -743,18 +743,18 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado == "Confirmado")
                 {
-                    if (Storage.Instance.camasCapital <= 10)
+                    if (Storage.Instance.camasCapital == 10)
                     {
                         Storage.Instance.ContagiadosCapitalEspera.Insert(this, CompareByCategory);
                     }
                     else
                     {
                         Storage.Instance.camasCapital++;
-                        var index = Storage.Instance.hashGUA.Dequeue();
+                        /*ar index = Storage.Instance.hashGUA.Dequeue();
                         index.estado = "Ocupado";
                         Storage.Instance.hashGUA.Enqueue(index);
                         this.IndexCama = index;
-                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);*/
                     }
                 }
                 else if (Estado == "Sospechoso")
@@ -773,11 +773,11 @@ namespace Proyecto_ED1_2020.Models
                     else
                     {
                         Storage.Instance.CamasOriente++;
-                        var index = Storage.Instance.hashORI.Dequeue();
+                        /*var index = Storage.Instance.hashORI.Dequeue();
                         index.estado = "Ocupado";
                         Storage.Instance.hashORI.Enqueue(index);
                         this.IndexCama = index;
-                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);*/
                     }
                 }
                 else if (Estado == "Sospechoso")
@@ -796,11 +796,11 @@ namespace Proyecto_ED1_2020.Models
                     else
                     {
                         Storage.Instance.camasQuetzaltenago++;
-                        var index = Storage.Instance.hashQUE.Dequeue();
+                        /*var index = Storage.Instance.hashQUE.Dequeue();
                         index.estado = "Ocupado";
                         Storage.Instance.hashQUE.Enqueue(index);
                         this.IndexCama = index;
-                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);*/
                     }
                 }
                 else if (Estado == "Sospechoso")
@@ -819,11 +819,11 @@ namespace Proyecto_ED1_2020.Models
                     else
                     {
                         Storage.Instance.camasEscuintla++;
-                        var index = Storage.Instance.hashESC.Dequeue();
+                        /*var index = Storage.Instance.hashESC.Dequeue();
                         index.estado = "Ocupado";
                         Storage.Instance.hashESC.Enqueue(index);
                         this.IndexCama = index;
-                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);*/
                     }
                 }
                 else if (Estado == "Sospechoso")
