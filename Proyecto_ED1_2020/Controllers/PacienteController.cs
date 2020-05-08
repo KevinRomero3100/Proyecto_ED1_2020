@@ -13,8 +13,23 @@ namespace Proyecto_ED1_2020.Controllers
     {
         public ActionResult Registrar()
         {
+            if (Storage.Instance.IncocacionCamas)
+            {
+                IndexCama camas = new IndexCama();
+                Storage.Instance.hashGUA = camas.hashGUA();
+                Storage.Instance.hashQUE = camas.hashQUE();
+                Storage.Instance.hashORI = camas.hashORI();
+                Storage.Instance.hashESC = camas.hashESC();
+                Storage.Instance.hashPET = camas.hashPET();
+                Storage.Instance.IncocacionCamas = false;
+            }
             Paciente paciente = new Paciente();
             return View(paciente);
+        }
+        public ActionResult Estadisticas()
+        {
+            Estadistica estadistica = new Estadistica();
+            return View(estadistica);
         }
        
         public ActionResult BusquedaAvanzada()
@@ -27,6 +42,69 @@ namespace Proyecto_ED1_2020.Controllers
             Paciente = Paciente.Busqueda(id);
             return View(Paciente);
         }
+
+
+        public ActionResult Camas()
+        {
+            if (Storage.Instance.IncocacionCamas)
+            {
+                IndexCama camas = new IndexCama();
+                Storage.Instance.hashGUA = camas.hashGUA();
+                Storage.Instance.hashQUE = camas.hashQUE();
+                Storage.Instance.hashORI = camas.hashORI();
+                Storage.Instance.hashESC = camas.hashESC();
+                Storage.Instance.hashPET = camas.hashPET();
+                Storage.Instance.IncocacionCamas = false;
+            }
+            List<IndexCama> disponibles = new List<IndexCama>();
+
+            var capital = Storage.Instance.hashGUA;
+            while (capital.Count() != 0)
+            {
+                var valor = capital.Dequeue();
+                disponibles.Add(valor);
+            }
+            var quetzaltenango = Storage.Instance.hashQUE;
+            while (quetzaltenango.Count() != 0)
+            {
+                var valor = quetzaltenango.Dequeue();
+                disponibles.Add(valor);
+            }
+            var escuintla = Storage.Instance.hashESC;
+            while (escuintla.Count() != 0 )
+            {
+                var valor = escuintla.Dequeue();
+                disponibles.Add(valor);
+            }
+            var oriente = Storage.Instance.hashORI;
+            while (oriente.Count() != 0)
+            {
+                var valor = oriente.Dequeue();
+                disponibles.Add(valor);
+            }
+            var peten = Storage.Instance.hashPET;
+            while (peten.Count() != 0)
+            {
+                var valor = peten.Dequeue();
+                disponibles.Add(valor);
+            }
+            return View(disponibles);
+        }
+
+        public ActionResult CambiarEstado(long id)
+        {
+            Paciente paciente = new Paciente();
+            paciente = paciente.Recuperar(id);
+            return View("Detalles", paciente);
+        }
+
+        public ActionResult NuevaPrueva(long id)
+        {
+            Paciente paciente = new Paciente();
+            paciente = paciente.Diagnosticar(id);
+            return View("Detalles", paciente);
+        }
+
         [HttpPost]
         public ActionResult BusquedaAvanzada(FormCollection formcollection)
         {
@@ -106,6 +184,7 @@ namespace Proyecto_ED1_2020.Controllers
                 {
                     paciente = new Paciente();
                     ViewBag.Confirmacion = "Paciente registrado con exito";
+
                     return View("Registrar", paciente);
                 }
                 else

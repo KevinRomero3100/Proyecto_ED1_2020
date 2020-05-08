@@ -1,5 +1,6 @@
 ﻿using System;
 using Proyecto_ED1_2020.Helpers;
+using Proyecto_ED1_2020.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +10,7 @@ namespace Proyecto_ED1_2020.Models
     public class Paciente
     {
         public string Nombre { get; set; }
+        public IndexCama IndexCama { get; set; }
         public string Apellido { get; set; }
         public long CUI { get; set; }
         public int Edad { get; set; }
@@ -19,6 +21,7 @@ namespace Proyecto_ED1_2020.Models
         public List<string> Sintomas { get; set; }
         public string DescripcionDePosibleContagio { get; set; }
         public string Estado { get; set; }
+        
 
 
         public string HospitalDeAtencion { get; set; }
@@ -574,37 +577,22 @@ namespace Proyecto_ED1_2020.Models
             }
             return arrayvalores[resultado];
         }
-        public void AsignarHospital()
+        public Paciente Diagnosticar(long id)
         {
-            var depto = this.Departamento;
-            if ( depto == "Petén" || depto == "Alta Verapaz"||depto == "Quiché")
+            Paciente paciente = new Paciente();
+            paciente.CUI = id;
+            paciente = Storage.Instance.RegistroGeneral.search(paciente, CompararPorCUI).Value;
+            if (paciente.Diagnosticar() == "Confirmado")
             {
-                this.HospitalDeAtencion = "PETEN";
-            }
-            else if (depto == "Guatemala" || depto == "Baja Verapaz" || depto == "El Progreso" || depto == "Jalapa" || depto == "Santa Rosa")
-            {
-                this.HospitalDeAtencion = "GUATEMALA";
-            }
-            else if (depto == "Zacapa" || depto == "Izabal" || depto == "Chiquimula" || depto == "Jutiapa")
-            {
-                this.HospitalDeAtencion = "ZACAPA";
-            }
-            else if (depto == "Quetzaltenango" || depto == "Huehuetenango" || depto == "San Marcos" || depto == "Totonicapán" || depto == "Retalhuleu")
-            {
-                this.HospitalDeAtencion = "QUETZALTENANGO";
-            }
-            else if (depto == "Escuintla" || depto == "Sacatepéquez" || depto == "Chimaltenango" || depto == "Sololá" || depto == "Suchitepéquez")
-            {
-                this.HospitalDeAtencion = "ESCUINTLA";
-            }
-        }
+                Storage.Instance.RegistroGeneral.Delete(paciente,CompararPorCUI);
+                paciente.Estado = "Confirmado";
+                paciente.AsignarCategoria();
+                paciente.IncertarEnCola();
+                Storage.Instance.RegistroGeneral.Insert(paciente, CompararPorCUI);
 
-        public void Recuperar()
-        {
-            this.Estado = "Recuperado";
-            Storage.Instance.recuperados++;
+            }
+            return paciente;
         }
-
         public Paciente Busqueda(long CUI)
         {
             Paciente buscado = new Paciente();
@@ -644,7 +632,41 @@ namespace Proyecto_ED1_2020.Models
                 return encontrado;
             }
         }
-
+        public void AsignarHospital()
+        {
+            var depto = this.Departamento;
+            if (depto == "Petén" || depto == "Alta Verapaz" || depto == "Quiché")
+            {
+                this.HospitalDeAtencion = "PETEN";
+            }
+            else if (depto == "Guatemala" || depto == "Baja Verapaz" || depto == "El Progreso" || depto == "Jalapa" || depto == "Santa Rosa")
+            {
+                this.HospitalDeAtencion = "GUATEMALA";
+            }
+            else if (depto == "Zacapa" || depto == "Izabal" || depto == "Chiquimula" || depto == "Jutiapa")
+            {
+                this.HospitalDeAtencion = "ZACAPA";
+            }
+            else if (depto == "Quetzaltenango" || depto == "Huehuetenango" || depto == "San Marcos" || depto == "Totonicapán" || depto == "Retalhuleu")
+            {
+                this.HospitalDeAtencion = "QUETZALTENANGO";
+            }
+            else if (depto == "Escuintla" || depto == "Sacatepéquez" || depto == "Chimaltenango" || depto == "Sololá" || depto == "Suchitepéquez")
+            {
+                this.HospitalDeAtencion = "ESCUINTLA";
+            }
+        }
+        //
+        public Paciente Recuperar(long CUI)
+                {
+                    Paciente paciente1 = new Paciente();
+                    paciente1.CUI = CUI;
+                    paciente1 = Storage.Instance.RegistroGeneral.Delete(paciente1,CompararPorCUI).Value;
+                    paciente1.Estado = "Recuperado";
+                    Storage.Instance.RegistroGeneral.Insert(paciente1, CompararPorCUI);
+                    Storage.Instance.recuperados++;
+                    return paciente1;
+                }
         private void AsignarCategoria()
         {
             if (this.Estado== "Confirmado")
@@ -698,7 +720,19 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado== "Confirmado")
                 {
-                    Storage.Instance.ContagiadosPetenEspera.Insert(this, CompareByCategory);
+                    if (Storage.Instance.camasPeten ==10)
+                    {
+                        Storage.Instance.ContagiadosPetenEspera.Insert(this, CompareByCategory);
+                    }
+                    else
+                    {
+                        Storage.Instance.camasPeten++;
+                        var index = Storage.Instance.hashPET.Dequeue();
+                        index.estado = "Ocupado";
+                        Storage.Instance.hashPET.Enqueue(index);
+                        this.IndexCama = index;
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                    }
                 }
                 else if (Estado == "Sospechoso")
                 {
@@ -709,7 +743,19 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado == "Confirmado")
                 {
-                    Storage.Instance.ContagiadosCapitalEspera.Insert(this, CompareByCategory);
+                    if (Storage.Instance.camasCapital <= 10)
+                    {
+                        Storage.Instance.ContagiadosCapitalEspera.Insert(this, CompareByCategory);
+                    }
+                    else
+                    {
+                        Storage.Instance.camasCapital++;
+                        var index = Storage.Instance.hashGUA.Dequeue();
+                        index.estado = "Ocupado";
+                        Storage.Instance.hashGUA.Enqueue(index);
+                        this.IndexCama = index;
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                    }
                 }
                 else if (Estado == "Sospechoso")
                 {
@@ -720,7 +766,19 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado == "Confirmado")
                 {
-                    Storage.Instance.ContagiadosOrienteEspera.Insert(this, CompareByCategory);
+                    if (Storage.Instance.CamasOriente <= 10)
+                    {
+                        Storage.Instance.ContagiadosOrienteEspera.Insert(this, CompareByCategory);
+                    }
+                    else
+                    {
+                        Storage.Instance.CamasOriente++;
+                        var index = Storage.Instance.hashORI.Dequeue();
+                        index.estado = "Ocupado";
+                        Storage.Instance.hashORI.Enqueue(index);
+                        this.IndexCama = index;
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                    }
                 }
                 else if (Estado == "Sospechoso")
                 {
@@ -731,7 +789,19 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado == "Confirmado")
                 {
-                    Storage.Instance.ContagiadoQuetzaltenagoEspera.Insert(this, CompareByCategory);
+                    if (Storage.Instance.camasQuetzaltenago <= 10)
+                    {
+                        Storage.Instance.ContagiadoQuetzaltenagoEspera.Insert(this, CompareByCategory);
+                    }
+                    else
+                    {
+                        Storage.Instance.camasQuetzaltenago++;
+                        var index = Storage.Instance.hashQUE.Dequeue();
+                        index.estado = "Ocupado";
+                        Storage.Instance.hashQUE.Enqueue(index);
+                        this.IndexCama = index;
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                    }
                 }
                 else if (Estado == "Sospechoso")
                 {
@@ -742,7 +812,19 @@ namespace Proyecto_ED1_2020.Models
             {
                 if (Estado == "Confirmado")
                 {
-                    Storage.Instance.ContagiadosEscuintlaEspera.Insert(this, CompareByCategory);
+                    if (Storage.Instance.camasEscuintla <= 10)
+                    {
+                        Storage.Instance.ContagiadosEscuintlaEspera.Insert(this, CompareByCategory);
+                    }
+                    else
+                    {
+                        Storage.Instance.camasEscuintla++;
+                        var index = Storage.Instance.hashESC.Dequeue();
+                        index.estado = "Ocupado";
+                        Storage.Instance.hashESC.Enqueue(index);
+                        this.IndexCama = index;
+                        Storage.Instance.CamasOcupadas.IncertT(index.Codigo, this, CompararPorCUI);
+                    }
                 }
                 else if (Estado == "Sospechoso")
                 {
@@ -761,6 +843,7 @@ namespace Proyecto_ED1_2020.Models
                 AsignarHospital();
                 Storage.Instance.RegistroGeneral.Insert(this, CompararPorCUI);
                 IncertarEnCola();
+
                 return true;
             }
             catch (Exception)

@@ -1,0 +1,50 @@
+﻿@model Proyecto_ED1_2020.Models.Estadistica
+
+@{
+    ViewBag.Title = "Estadisticas";
+}
+
+<h2>Estadistica</h2>
+    @if (Model != null)
+    {
+        <div>
+            <h4>Estadistica</h4>
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Contagiados)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Contagiados)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Sospechosos)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Sospechosos)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.Recuperados)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Recuperados)
+                </dd>
+
+                <dt>
+                    @Html.DisplayName("% Sospechosos Positivos")
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.PorsentageSospechososPocitivos)
+                </dd>
+
+            </dl>
+        </div>
+
+     }
+

@@ -16,7 +16,7 @@ namespace CustumGenerics.Structures
     public delegate int CompareTo<T>(T value, T value2);
     public interface TAVL<T>
     {
-        Node<T> Delete(T value);
+        Node<T> Delete(T value, Comparison<T> comparison);
         Node<T> search(T value, Comparison<T> comparison);
         void Insert(T value, Comparison<T> comparison);
         List<T> InOrder();

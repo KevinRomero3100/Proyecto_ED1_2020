@@ -490,15 +490,15 @@ namespace CustumGenerics.Structures
             }
             return replace;
         }
-        public Node<T> Delete(T value)
+        public Node<T> Delete(T value, Comparison<T> comparison)
         {
             var auxiliar = root;
             var parent = null as Node<T>;
             var childLeft = true;
-            while (compare(auxiliar.Value, value) != 0)
+            while (comparison.Invoke(auxiliar.Value, value) != 0)
             {
                 parent = auxiliar;
-                if (compare(value, auxiliar.Value) < 0)
+                if (comparison.Invoke(value, auxiliar.Value) < 0)
                 {
                     childLeft = true;
                     auxiliar = auxiliar.left;
@@ -599,6 +599,7 @@ namespace CustumGenerics.Structures
                 replace.left = auxiliar.left;
 
             }
+            count--;
             return auxiliar;
         }
         #endregion

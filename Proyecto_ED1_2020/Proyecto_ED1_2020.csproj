@@ -130,6 +130,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Storage.cs" />
+    <Compile Include="Models\Estadistica.cs" />
+    <Compile Include="Models\IndexCama.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -173,6 +175,8 @@
     <Content Include="Views\Paciente\prueva.cshtml" />
     <Content Include="Views\Paciente\Detalles.cshtml" />
     <Content Include="Views\Paciente\BusquedaAvanzada.cshtml" />
+    <Content Include="Views\Paciente\Estadisticas.cshtml" />
+    <Content Include="Views\Paciente\Camas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
