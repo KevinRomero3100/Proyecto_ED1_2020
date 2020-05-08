@@ -1,4 +1,5 @@
 ﻿using System;
+using Proyecto_ED1_2020.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,15 +12,21 @@ namespace Proyecto_ED1_2020.Models
         public string Apellido { get; set; }
         public long CUI { get; set; }
         public int Edad { get; set; }
-        public int Prioridad { get; set; }
+        public double Probabilidad { get; set; }
+        public int Categoria { get; set; }
         public string Departamento { get; set; }
         public string Munucipio { get; set; }
         public List<string> Sintomas { get; set; }
         public string DescripcionDePosibleContagio { get; set; }
+        public string Estado { get; set; }
+
+
+        public string HospitalDeAtencion { get; set; }
 
         public static string[] Departamentos { get; set; }
         public List<string> Municipios { get; set; }
 
+        #region Form
         public List<string> ObtenerMunicipios(string departamento)
         {
             Municipios = new List<string>();
@@ -226,7 +233,7 @@ namespace Proyecto_ED1_2020.Models
             else if (departamento == "Petén")
             {
                 Municipios.Add("Flores");
-                Municipios.Add("Dolore");
+                Municipios.Add("Dolores");
                 Municipios.Add("La Libertad");
                 Municipios.Add("Melchor de Mencos");
                 Municipios.Add("Poptún");
@@ -447,10 +454,6 @@ namespace Proyecto_ED1_2020.Models
             }
             else if (departamento == "Zacapa")
             {
-                return Municipios;
-            }
-            else 
-            {
                 Municipios.Add("Cabañas");
                 Municipios.Add("Estanzuela");
                 Municipios.Add("Gualán");
@@ -462,7 +465,10 @@ namespace Proyecto_ED1_2020.Models
                 Municipios.Add("Teculután");
                 Municipios.Add("Usumatlá");
                 Municipios.Add("Zacapa ");
-
+                return Municipios;
+            }
+            else 
+            {
                 return Municipios = null;
             }
         }
@@ -494,6 +500,298 @@ namespace Proyecto_ED1_2020.Models
             Departamentos[21] = "Zacapa";
             return Departamentos;
         }
+        #endregion
+        public double CrearProbabilidad()
+        {
+            
+            double probabilidad = 0.05;
+            string text = this.DescripcionDePosibleContagio.ToLower();
+            text.ToLower();
+            if (text.Contains("viaje a españa"))
+            {
+                probabilidad = probabilidad + 0.1;
+            }
+            if (text.Contains("viaje a italia"))
+            {
+                probabilidad = probabilidad + 0.1;
+            }
+            if (text.Contains("viaje a francia"))
+            {
+                probabilidad = probabilidad + 0.1;
+            }
+            if (text.Contains("viaje a alemania"))
+            {
+                probabilidad = probabilidad + 0.1;
+            }
+            if (text.Contains("viaje a rino unido"))
+            {
+                probabilidad = probabilidad + 0.1;
+            }
+            if (text.Contains("jefe contagiado"))
+            {
+                probabilidad = probabilidad + 0.15;
+            }
+            if (text.Contains("amigo contagiado"))
+            {
+                probabilidad = probabilidad + 0.15;
+            }
+            if (text.Contains("vecino contagiado"))
+            {
+                probabilidad = probabilidad + 0.15;
+            }
+            if (text.Contains("compañero de trabajajo contagiado"))
+            {
+                probabilidad = probabilidad + 0.15;
+            }
+            if (text.Contains("familiar contagiado"))
+            {
+                probabilidad = probabilidad + 0.30;
+            }
+
+            return probabilidad;
+        }
+        public string Diagnosticar()
+        {
+            var prob = CrearProbabilidad();
+            this.Probabilidad = prob;
+            string[] arrayvalores = new string[] { "Confirmado", "Sospechoso" };
+            double[] pesos = new double[] { prob, 1-prob };
+            int resultado = 0;
+            double[] pesosAcumulados = pesos.Aggregate((IEnumerable<double>)new List<double>(),
+                        (x, i) => x.Concat(new[] { x.LastOrDefault() + i })).ToArray();
+            int[] resultadoaleatorio = new int[4];
+            for (int i = 0; i < 1; i++)
+            {
+                resultado = pesosAcumulados.ToList().IndexOf(pesosAcumulados.Where(x => x > Storage.Instance.RandomParaDiagnostivo.NextDouble() * pesos.Sum()).FirstOrDefault());
+            }
+            if (arrayvalores[resultado] == "Confirmado")
+            {
+                Storage.Instance.Contagiados++;
+            }
+            else
+            {
+                Storage.Instance.Sospechos++;
+            }
+            return arrayvalores[resultado];
+        }
+        public void AsignarHospital()
+        {
+            var depto = this.Departamento;
+            if ( depto == "Petén" || depto == "Alta Verapaz"||depto == "Quiché")
+            {
+                this.HospitalDeAtencion = "PETEN";
+            }
+            else if (depto == "Guatemala" || depto == "Baja Verapaz" || depto == "El Progreso" || depto == "Jalapa" || depto == "Santa Rosa")
+            {
+                this.HospitalDeAtencion = "GUATEMALA";
+            }
+            else if (depto == "Zacapa" || depto == "Izabal" || depto == "Chiquimula" || depto == "Jutiapa")
+            {
+                this.HospitalDeAtencion = "ZACAPA";
+            }
+            else if (depto == "Quetzaltenango" || depto == "Huehuetenango" || depto == "San Marcos" || depto == "Totonicapán" || depto == "Retalhuleu")
+            {
+                this.HospitalDeAtencion = "QUETZALTENANGO";
+            }
+            else if (depto == "Escuintla" || depto == "Sacatepéquez" || depto == "Chimaltenango" || depto == "Sololá" || depto == "Suchitepéquez")
+            {
+                this.HospitalDeAtencion = "ESCUINTLA";
+            }
+        }
+
+        public void Recuperar()
+        {
+            this.Estado = "Recuperado";
+            Storage.Instance.recuperados++;
+        }
+
+        public Paciente Busqueda(long CUI)
+        {
+            Paciente buscado = new Paciente();
+            if (Storage.Instance.RegistroGeneral != null)
+            {
+                    buscado.CUI = CUI;
+                    var encontrado = Storage.Instance.RegistroGeneral.search(buscado, CompararPorCUI);
+                    return encontrado.Value;
+            }
+            else
+            {
+                return buscado;
+            }
+        }
+        public List<Paciente> BusquedaAvanzada(string parametroDeBusqueda)
+        {
+            Paciente buscado = new Paciente();
+            List<Paciente> encontrado = new List<Paciente>();
+            if (Storage.Instance.RegistroGeneral != null)
+            {
+                
+                buscado.Nombre = parametroDeBusqueda;
+                encontrado = Storage.Instance.RegistroGeneral.where(buscado, CompararPorNombre, 0);
+                if (encontrado.Count > 0)
+                {
+                    return encontrado;
+                }
+                else
+                {
+                    buscado.Apellido = parametroDeBusqueda;
+                    encontrado = Storage.Instance.RegistroGeneral.where(buscado, CompararPorApellido, 0);
+                    return encontrado;
+                }
+            }
+            else
+            {
+                return encontrado;
+            }
+        }
+
+        private void AsignarCategoria()
+        {
+            if (this.Estado== "Confirmado")
+            {
+                if (Edad <= 0)
+                {
+                    this.Categoria = 2;
+                }
+                else if (Edad >= 27 && Edad <= 59) 
+                {
+                    this.Categoria = 3;
+                }
+                else if (Edad >= 60)
+                {
+                    this.Categoria = 1;
+                }
+                else if (Edad > 0 && Edad < 27) 
+                {
+                    this.Categoria = 5;
+                }
+                else
+                {
+
+                }
+            }
+            else if (this.Estado== "Sospechoso")
+            {
+                if (Edad <= 0)
+                {
+                    this.Categoria = 6;
+                }
+                else if (Edad >= 27 && Edad <= 59)
+                {
+                    this.Categoria = 7;
+                }
+                else if (Edad >= 60)
+                {
+                    this.Categoria = 4;
+                }
+                else if (Edad > 0 && Edad < 27)
+                {
+                    this.Categoria = 8;
+                }
+            }
+          
+        }
+
+        private void IncertarEnCola()
+        {
+            if (this.HospitalDeAtencion == "PETEN")
+            {
+                if (Estado== "Confirmado")
+                {
+                    Storage.Instance.ContagiadosPetenEspera.Insert(this, CompareByCategory);
+                }
+                else if (Estado == "Sospechoso")
+                {
+                    Storage.Instance.SospechososPetenEspera.Insert(this, CompareByCategory);
+                }
+            }
+            if (this.HospitalDeAtencion == "GUATEMALA")
+            {
+                if (Estado == "Confirmado")
+                {
+                    Storage.Instance.ContagiadosCapitalEspera.Insert(this, CompareByCategory);
+                }
+                else if (Estado == "Sospechoso")
+                {
+                    Storage.Instance.SospechososCapitalEspera.Insert(this, CompareByCategory);
+                }
+            }
+            if (this.HospitalDeAtencion == "ZACAPA")
+            {
+                if (Estado == "Confirmado")
+                {
+                    Storage.Instance.ContagiadosOrienteEspera.Insert(this, CompareByCategory);
+                }
+                else if (Estado == "Sospechoso")
+                {
+                    Storage.Instance.SospechososOrienteEspera.Insert(this, CompareByCategory);
+                }
+            }
+            if (this.HospitalDeAtencion == "QUETZALTENANGO")
+            {
+                if (Estado == "Confirmado")
+                {
+                    Storage.Instance.ContagiadoQuetzaltenagoEspera.Insert(this, CompareByCategory);
+                }
+                else if (Estado == "Sospechoso")
+                {
+                    Storage.Instance.SospechososQuetzaltenagoEspera.Insert(this, CompareByCategory);
+                }
+            }
+            if (this.HospitalDeAtencion == "ESCUINTLA")
+            {
+                if (Estado == "Confirmado")
+                {
+                    Storage.Instance.ContagiadosEscuintlaEspera.Insert(this, CompareByCategory);
+                }
+                else if (Estado == "Sospechoso")
+                {
+                    Storage.Instance.SospechososEscuintlaEspera.Insert(this, CompareByCategory);
+                }
+            }
+
+        }
+        public bool Guardar()
+        {
+            try
+            {
+                this.Estado = Diagnosticar();
+                AsignarCategoria();
+                CrearProbabilidad();
+                AsignarHospital();
+                Storage.Instance.RegistroGeneral.Insert(this, CompararPorCUI);
+                IncertarEnCola();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+           
+        }
+        #region
+        public static Comparison<Paciente> CompararPorCUI = delegate (Paciente indice1, Paciente indice2)
+        {
+            return indice1.CUI.CompareTo(indice2.CUI);
+        };
+        public static Comparison<Paciente> CompararPorNombre = delegate (Paciente indice1, Paciente indice2)
+        {
+            return indice1.Nombre.CompareTo(indice2.Nombre);
+        };
+        public static Comparison<Paciente> CompararPorApellido = delegate (Paciente indice1, Paciente indice2)
+        {
+            return indice1.Apellido.CompareTo(indice2.Apellido);
+        };
+
+        public delegate int Compare(Paciente value1, Paciente value2);
+        public static Compare CompareByCategory = CompareTo;
+
+        public static int CompareTo(Paciente father, Paciente song)
+        {
+            int prueva = song.Categoria.CompareTo(father.Categoria);
+            return song.Categoria.CompareTo(father.Categoria);
+        }
+        #endregion
 
     }
 }

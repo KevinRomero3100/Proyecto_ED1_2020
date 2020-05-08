@@ -1,0 +1,83 @@
+﻿@model Proyecto_ED1_2020.Models.Paciente
+
+
+@{
+    ViewBag.Title = "Busqueda";
+}
+
+<h2>Paciente</h2>
+
+<div>
+    @if (Model != null)
+    {
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Apellido)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Apellido)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CUI)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CUI)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Edad)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Edad)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Departamento)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Departamento)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Munucipio)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Munucipio)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Estado)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Estado)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.HospitalDeAtencion)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.HospitalDeAtencion)
+            </dd>
+
+        </dl>
+    }
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

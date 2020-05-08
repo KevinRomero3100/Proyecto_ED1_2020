@@ -6,15 +6,25 @@ using System.Threading.Tasks;
 
 namespace CustumGenerics.Structures
 {
-    public class AVL<T> : TAVL<T> where T: IComparable
+    public class AVL<T>
     {
         public Node<T> root;
+        public static int count { get; set; }
         public List<T> list;
         CompareTo<T> compare;
+
+        public static Node<T> Wanted { get; set; }
+
+        public int Count()
+        {
+            return count;
+        }
+
         #region CONSTRUCTOR
         public AVL()
         {
             root = null;
+            count = 0;
         }
         public AVL(CompareTo<T> compare)
         {
@@ -361,27 +371,69 @@ namespace CustumGenerics.Structures
         #region FUNCIONES PRINCIPALES
         public Node<T> search(T value, Comparison<T> comparison)
         {
-            var auxiliar = root;
-            while (comparison.Invoke(auxiliar.Value, value) != 0)
+            Wanted = null;
+            Preorden(root, value, comparison);
+            if (Wanted != null)
             {
-                auxiliar = comparison.Invoke(value, auxiliar.Value) < 0 ? auxiliar.left : auxiliar.right;
-                if (auxiliar == null)
-                {
-                    return null;
-                }
+                return Wanted;
             }
-            return auxiliar;
+            else
+                return Wanted;
+        }
+        public List<T> where(T value, Comparison<T> comparison, int i)
+        {
+            List<T> ts = new List<T>();
+            PreOrden(root, value, comparison,ref i,ref ts);
+            if (Wanted != null)
+                return ts;
+            else
+                return ts;
+        }
+
+        public static void Preorden(Node<T> actualy, T value, Comparison<T> comparison)
+        {
+            if (comparison.Invoke(value, actualy.Value) == 0)
+                Wanted = actualy;
+            if (Wanted == null)
+            {
+                if (actualy.left != null)
+                    Preorden(actualy.left, value, comparison);
+                if (actualy.right != null)
+                    Preorden(actualy.right, value, comparison);
+            }
+        }
+        public static void PreOrden(Node<T> actualy, T value, Comparison<T> comparison, ref int i,ref List<T> ts)
+        {
+            i++;
+            if (comparison.Invoke(value, actualy.Value) == 0)
+            {
+                Wanted = actualy;
+                ts.Add(actualy.Value);
+            }
+            if (i <= count)
+            {
+                if (actualy.left != null)
+                    PreOrden(actualy.left, value, comparison,ref i, ref ts);
+                if (actualy.right != null)
+                    PreOrden(actualy.right, value, comparison, ref i, ref ts);
+            }
+            else
+            {
+                return;
+            }
         }
         public void Insert(T value, Comparison<T> comparison)
         {
             var newNode = new Node<T>(value);
             if (root == null)
             {
+                count++;
                 root = newNode;
             }
             else
             {
                 InsertInto(newNode, root, comparison);
+                count++;
             }
         }
         public void InsertInto(Node<T> newNode, Node<T> parent, Comparison<T> comparison)

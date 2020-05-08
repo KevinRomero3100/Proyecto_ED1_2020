@@ -9,8 +9,7 @@ namespace CustumGenerics.Structures
     public class HashTable<T>
     {
         private T[,] hashTable = new T[10, 10];
-
-        public delegate int Compare(string key, T value);
+        private int count = 0;
 
         private int convertToAscci(string key)
         {
@@ -31,6 +30,11 @@ namespace CustumGenerics.Structures
         {
             return (convertToAscci(key) ^ 2) % 10;
         }
+
+        public int getCount()
+        {
+            return count;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -48,6 +52,7 @@ namespace CustumGenerics.Structures
                 if (hashTable[pos1, pos2] == null)
                 {
                     hashTable[pos1, pos2] = value;
+                    count++;
                     return true;
                 }
                 else
@@ -57,6 +62,7 @@ namespace CustumGenerics.Structures
                         if (hashTable[pos1, i] == null)
                         {
                             hashTable[pos1, i] = value;
+                            count++;
                             return true;
                         }
                     }
@@ -77,6 +83,7 @@ namespace CustumGenerics.Structures
                         {
                             hashTable[pos1, i] = value;
                             i = 10;
+                            count++;
                         }
                     }
                     return true;
